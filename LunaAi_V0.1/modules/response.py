@@ -9,8 +9,8 @@ from faster_whisper import WhisperModel
 import os
 
 wake_word = "luna"
-groq_client = Groq(api_key='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')
-openai_client = OpenAI(api_key='sk-proj-dzy1wEAwtRVbQyQNlU4BT3BlbkFJJxth58Z4ZT8Nc6ODvxt2')
+groq_client = Groq(api_key=)
+openai_client = OpenAI(api_key='')
 
 r = sr.Recognizer()
 source = sr.Microphone()
