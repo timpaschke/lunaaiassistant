@@ -6,19 +6,20 @@ groq_client = Groq(api_key='gsk_fRn9XT42VAhXQZLsVWNHWGdyb3FYwV4b7ibqVwK0ZyezvbvR
 
 fine_tuning = ('You are my ai Assitant for Note taking. You will create a Markdown note file.'
                'You will get have to make a got looking, easy to understand note in German with all the necessary'
-               'things given to you. stick to the informtion that is given to you. Make the notes so i can learn with them. You just respond with'
-               'the created note'
+               'things given to you. stick to the informtion that is given to you. Make the notes so i can learn with them.'
+               'Only create a note out of the information i said to you.'
+               'You only return the note with no extra Information.'
                )
 
 def create_note(note):
     combined_content = fine_tuning + " " + note
     convo = [{'role': 'user', 'content': combined_content}]
-    chat_completion = groq_client.chat.completions.create(messages=convo, model='llama3-70b-8192')
+    chat_completion = groq_client.chat.completions.create(messages=convo, model='llama3-8b-8192')
     text = chat_completion.choices[0].message.content
     safe_note(text,create_title(note))
 
 def create_title(note):
-    combined_content = "Erstelle zu folgender Notiz ein passenden Titel. Du sollst nur den Titel zurück geben" + note
+    combined_content = "Erstelle zu folgender Notiz ein passenden Titel mit keinen Sonderzeichen. Beachte dass der Titel so verfasst sein soll dass ich ihn Einfach finde kann, also so dass ein such algorithmus diese als gesuchte Notiz identifizieren kann Du sollst nur den Titel zurück geben" + note
     convo = [{'role': 'user', 'content': combined_content}]
     chat_completion = groq_client.chat.completions.create(messages=convo, model='llama3-70b-8192')
     return chat_completion.choices[0].message.content
@@ -36,3 +37,5 @@ def safe_note(note, file_name):
     # Write the note to the file in Markdown format
     with open(file_path, "w", encoding="utf-8") as file:
         file.write(note)
+
+create_note(input("your note: "))
