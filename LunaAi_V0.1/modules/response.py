@@ -8,10 +8,21 @@ import re
 from faster_whisper import WhisperModel
 import os
 
-wake_word = "luna"
-groq_client = Groq(api_key=)
-openai_client = OpenAI(api_key='')
+'''
+This part of the Assistant is for listening & 
+identifying the wanted task. After giving the task to the Controller & Operating it, 
+the Assistant give's you the reply here. 
+listening & response will be apart in V0.2
+'''
 
+# Wake word. Will be edited to Wake Words. So it can also be activated in a differnt context.
+wake_word = "luna"
+
+# You need groq API in this Version. In the Future Luna will be a AI Assistant running through an local API call with Ollama.
+groq_api = open('Y:\\Tim NAS\\API keys\\groq.txt', 'r').read().strip()
+groq_client = Groq(api_key= groq_api)
+
+# initializing recognizer and microphone access from you're computer or laptop
 r = sr.Recognizer()
 source = sr.Microphone()
 
@@ -22,19 +33,23 @@ speaker = tts.init()
 speaker.setProperty('rate', 150)
 
 
+"""
+Activates the listening throw your Mic & waits until it recognizes the Wake Word
+"""
 def start_listening():
     with source as s:
-        r.adjust_for_ambient_noise(s, duration=2)
+        r.adjust_for_ambient_noise(s, duration=1)
     print("Listening..., say ", wake_word, "followed with prompt.\n")
-    try:
-        r.listen_in_background(source, callback)
-    except sr.UnknownValueError:
-        print("I don't understand what you say.")
-
+    r.listen_in_background(source, callback)
     while True:
         time.sleep(0.1)
 
-def extract_prompt(transcribed_text, wake_word):
+"""
+Using the recognizer and a form of Regex to extract the prompt out of your Spoken sentence
+:return prompt: gives the extracted prompt if identified
+:return None: if the transcribed_text is not compatible with the pattern
+"""
+def extract_prompt(transcribed_text):
     pattern = rf'\b{re.escape(wake_word)}[\s,.?!]*([A-Za-z0-9].*)'
     match = re.search(pattern, transcribed_text, re.IGNORECASE)
 
@@ -45,18 +60,23 @@ def extract_prompt(transcribed_text, wake_word):
         return None
 
 def callback(recognizer, audio):
-    prompt_text = recognizer.recognize_google(audio, language='de-De')
-    clean_prompt = extract_prompt(prompt_text, wake_word)
-    print(prompt_text)
-    if clean_prompt:
-        print(f'USER: {clean_prompt}')
-        call = function_call(clean_prompt)
-        print(call)
+    try:
+        prompt_text = recognizer.recognize_google(audio, language='de-De')
+        clean_prompt = extract_prompt(prompt_text)
+        print(prompt_text)
+        if clean_prompt:
+            print(f'USER: {clean_prompt}')
+            call = function_call(clean_prompt)
+            print(call)
 
-        response = groq_prompt(prompt=clean_prompt)
-        speaker.say(response)
-        speaker.runAndWait()
-        speaker.stop()
+            response = groq_prompt(prompt=clean_prompt)
+            speaker.say(response)
+            speaker.runAndWait()
+            speaker.stop()
+    except sr.UnknownValueError:
+        print("I couldnt understand what you said!")
+
+#
 def groq_prompt(prompt):
     convo = [{'role':'user', 'content':prompt}]
     chat_completion = groq_client.chat.completions.create(messages = convo, model='llama3-70b-8192')
@@ -77,7 +97,7 @@ def function_call(prompt):
         {'role':'system', 'content':sys_msg},
         {'role':'user', 'content':prompt}
     ]
-    chat_completion = groq_client.chat.completions.create(messages=function_convo, model='llama3-70b-8192')
+    chat_completion = groq_client.chat.completions.create(messages=function_convo, model='llama3-8b-8192')
     response = chat_completion.choices[0].message.content
 
     return response
