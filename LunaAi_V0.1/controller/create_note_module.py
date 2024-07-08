@@ -21,7 +21,7 @@ def create_note(note):
 def create_title(note):
     combined_content = "Erstelle zu folgender Notiz ein passenden Titel mit keinen Sonderzeichen. Beachte dass der Titel so verfasst sein soll dass ich ihn Einfach finde kann, also so dass ein such algorithmus diese als gesuchte Notiz identifizieren kann Du sollst nur den Titel zurück geben" + note
     convo = [{'role': 'user', 'content': combined_content}]
-    chat_completion = groq_client.chat.completions.create(messages=convo, model='llama3-70b-8192')
+    chat_completion = groq_client.chat.completions.create(messages=convo, model='llama3-8b-8192')
     return chat_completion.choices[0].message.content
 
 def safe_note(note, file_name):

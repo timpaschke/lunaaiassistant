@@ -1,11 +1,9 @@
 import time
 
 from groq import Groq
-from openai import OpenAI
 import speech_recognition as sr
 import pyttsx3 as tts
 import re
-from faster_whisper import WhisperModel
 import os
 
 '''
