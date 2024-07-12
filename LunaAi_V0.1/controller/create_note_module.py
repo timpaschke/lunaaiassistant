@@ -4,7 +4,7 @@ import os
 note_path = 'C:\\Users\\Tim\\Documents\\test notes'
 groq_client = Groq(api_key='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')
 
-fine_tuning = ('You are my ai Assitant for Note taking. You will create a Markdown note file.'
+pre_prompt = ('You are my ai Assitant for Note taking. You will create a Markdown note file.'
                'You will get have to make a got looking, easy to understand note in German with all the necessary'
                'things given to you. stick to the informtion that is given to you. Make the notes so i can learn with them.'
                'Only create a note out of the information i said to you.'
@@ -12,7 +12,7 @@ fine_tuning = ('You are my ai Assitant for Note taking. You will create a Markdo
                )
 
 def create_note(note):
-    combined_content = fine_tuning + " " + note
+    combined_content = pre_prompt + " " + note
     convo = [{'role': 'user', 'content': combined_content}]
     chat_completion = groq_client.chat.completions.create(messages=convo, model='llama3-8b-8192')
     text = chat_completion.choices[0].message.content

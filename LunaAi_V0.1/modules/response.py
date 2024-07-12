@@ -59,7 +59,7 @@ def extract_prompt(transcribed_text):
 
 def callback(recognizer, audio):
     try:
-        prompt_text = recognizer.recognize_google(audio, language='de-De')
+        prompt_text = recognizer.recognize_google(audio, language='en-En')
         clean_prompt = extract_prompt(prompt_text)
         print(prompt_text)
         if clean_prompt:
@@ -87,7 +87,7 @@ def function_call(prompt):
         'You are an AI function calling model. You will determine whether to create a new Note,'
         'add a calendar event, add a task or calling no function is best for a voice assistant to respond'
         'to users prompt. You will respond with one selection for this list:'
-        '["create note","add calendar","add task","None", "information", "skim notes", "smarthome interaction"] \n'
+        '["create note", "skim notes", "add calendar", "upcoming events", "add task", "NONE"] \n'
         'Do not respond with anything but the most logical selection from that list with no explanations. Format the'
         'function call name exactly as I listed.'
     )
